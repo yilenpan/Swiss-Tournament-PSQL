@@ -72,6 +72,7 @@ def playerStandings():
     """
     DB = connect()
     c = DB.cursor()
+    # uses subqueries for matches won and matches played.
     c.execute("""
             SELECT players.id, players.name,
            (select count(*)
