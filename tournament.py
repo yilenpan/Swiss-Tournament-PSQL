@@ -8,13 +8,14 @@ import psycopg2
 
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
+    DB = psycopg2.connect("dbname=tournament")
+    c = DB.cursor()
+    return DB, c
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    DB = connect()
-    c = DB.cursor()
+    DB, c = connect()
     c.execute("TRUNCATE matches;")
     DB.commit()
     DB.close()
@@ -22,8 +23,7 @@ def deleteMatches():
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    DB = connect()
-    c = DB.cursor()
+    DB, c = connect()
     c.execute("TRUNCATE players, matches;")
     DB.commit()
     DB.close()
@@ -31,8 +31,7 @@ def deletePlayers():
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    DB = connect()
-    c = DB.cursor()
+    DB, c = connect()
     c.execute("SELECT count(*) as count from players;")
     result = c.fetchall()
     DB.commit()
@@ -50,8 +49,7 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    DB = connect()
-    c = DB.cursor()
+    DB, c = connect()
     data = (name,)
     SQL = "INSERT INTO players (name) VALUES (%s);"
     c.execute(SQL, data)
@@ -72,8 +70,7 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    DB = connect()
-    c = DB.cursor()
+    DB, c = connect()
     # uses subqueries for matches won and matches played.
     c.execute("""
             SELECT players.id, players.name,
@@ -100,8 +97,7 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    DB = connect()
-    c = DB.cursor()
+    DB, c = connect()
     data = (winner, loser, winner, loser,)
     SQL = "INSERT INTO matches(player1, player2, winner, loser) values(%s, %s, %s, %s);"
     c.execute(SQL, data)
