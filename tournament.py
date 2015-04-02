@@ -52,7 +52,9 @@ def registerPlayer(name):
     """
     DB = connect()
     c = DB.cursor()
-    c.execute("INSERT INTO players (name) VALUES (%s);", (name,))
+    data = (name,)
+    SQL = "INSERT INTO players (name) VALUES (%s);"
+    c.execute(SQL, data)
     DB.commit()
     DB.close()
 
@@ -100,7 +102,9 @@ def reportMatch(winner, loser):
     """
     DB = connect()
     c = DB.cursor()
-    c.execute("INSERT INTO matches(player1, player2, winner, loser) values(%s, %s, %s, %s);", (winner, loser, winner, loser,))
+    data = (winner, loser, winner, loser,)
+    SQL = "INSERT INTO matches(player1, player2, winner, loser) values(%s, %s, %s, %s);"
+    c.execute(SQL, data)
     DB.commit()
     DB.close()
 
